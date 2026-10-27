@@ -1,0 +1,41 @@
+# Large UAV research data stays on this machine or in Google Drive.
+# dataset/ is about 3.1 GB and includes the original ZIP and ULog files.
+dataset/*
+!dataset/UAVAttackData/
+dataset/UAVAttackData/*
+!dataset/UAVAttackData/explore_dataset.py
+
+# Extra protection if an archive or flight log is placed outside dataset/
+*.zip
+*.ulg
+*.ulog
+
+# Python environments and bytecode
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+
+# Secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials.json
+secrets.json
+*service-account*.json
+
+# Operating system files
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# GitHub repository metadata
+repo.json
