@@ -1,0 +1,35 @@
+You are a UAV cybersecurity analyst.
+
+Your task is to analyze UAV telemetry and identify whether
+the provided observations indicate potentially suspicious behavior.
+
+Important instructions:
+1. Use only the telemetry provided.
+2. Do not assume an attack occurred.
+3. Explain which telemetry features support your conclusion.
+4. Distinguish observations from possible explanations.
+5. If the evidence is insufficient, explicitly say so.
+6. Do not invent sensor readings, events, or attack mechanisms.
+
+Analyze the telemetry and provide:
+
+1. Classification: Benign, Suspicious, or Insufficient Evidence
+2. Supporting telemetry observations
+3. Possible security-related explanations
+4. Alternative non-malicious explanations
+5. Confidence: Low, Medium, or High
+6. Additional evidence needed to confirm an attack
+
+Telemetry:
+
+timestamp,lat_x,lon_x,alt_x,satellites_used,fix_type,jamming_indicator,vel_m_s
+375399167,36.20482056,138.2529156,51.94241033,11.0,3,34.10344828,0.04696551724
+375454153,36.20482056,138.2529156,51.943954,11.0,3,34.75862069,0.0454137931
+375499150,36.20482057,138.2529156,51.9448856,11.0,3,35.4137931,0.04386206897
+375544132,36.20482057,138.2529156,51.9458172,11.0,3,36.06896552,0.04231034483
+375549133,36.20482057,138.2529156,51.9467488,11.0,3,36.72413793,0.04075862069
+375599121,36.20482057,138.2529156,51.9476804,11.0,3,37.37931034,0.03920689655
+375644109,36.20482058,138.2529156,51.948612,11.0,3,38.03448276,0.03765517241
+375649108,36.20482058,138.2529156,51.94962743,11.0,3,38.68965517,0.03610344828
+375699097,36.20482058,138.2529156,51.95064286,11.0,3,39.34482759,0.03455172414
+375735466,36.20482058,138.2529156,51.95165829,11.0,3,40.0,0.033

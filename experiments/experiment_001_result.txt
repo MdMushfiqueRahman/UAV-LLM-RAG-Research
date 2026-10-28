@@ -1,0 +1,31 @@
+Experiment ID: EXP-001
+Model: Claude Opus 5.5 (user-reported)
+Experiment Date: 2026-10-28
+Dataset: UAV Attack Dataset
+Scenario: GPS Spoofing
+Sample: Last 10 benign telemetry records
+Ground Truth: benign
+LLM Prediction: Insufficient Evidence
+LLM Confidence: Low
+Decision Type: Abstention
+RAG Enabled: No
+
+Observations:
+- Jamming indicator increased from 34.10 to 40.00.
+- Satellite count remained at 11.
+- GPS fix type remained at 3.
+- Claude found insufficient evidence to confirm an attack.
+- Claude suggested possible interpolation artifacts.
+- Timestamp units were assumed, not independently verified.
+
+Evaluation:
+The model abstained rather than classifying the benign
+sample. Its observations largely matched the supplied
+telemetry, but some interpretations require verification.
+
+Limitations:
+- Single model response
+- Single 10-record telemetry window
+- No repeated trials
+- No controlled API configuration
+- No measured classification accuracy yet

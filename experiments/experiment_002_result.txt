@@ -1,0 +1,38 @@
+Experiment ID: EXP-002
+Experiment Date: 2026-10-28
+Model: GPT-6 (ChatGPT Temporary Chat)
+Dataset: UAV Attack Dataset
+Scenario: GPS Spoofing
+Input: First 10 malicious-labeled telemetry records
+Ground Truth: malicious
+LLM Prediction: Suspicious
+Suspicious-Behavior Confidence: Medium
+Confirmed Attack: No
+RAG Enabled: No
+
+Evaluation:
+- The model identified potentially suspicious telemetry.
+- Under the provisional mapping of Suspicious to
+  malicious, the prediction is a true positive.
+- The model did not confirm a cybersecurity attack.
+
+Observed Evidence:
+- Jamming indicator increased from 40.1 to 41.0.
+- Satellites used decreased from 10.83 to 9.33.
+- Reported velocity increased from 0.146 to 1.139.
+- Latitude and longitude remained nearly constant.
+- GPS fix type remained at 3.
+
+Research Limitations:
+- Single 10-record window.
+- Single model response.
+- The sample comes immediately after the label transition.
+- Possible interpolation and preprocessing effects.
+- Feature units and thresholds are not fully verified.
+- No repeated trials or controlled API configuration.
+- No generalizable detection accuracy established.
+
+Conclusion:
+GPT-6 classified this malicious-labeled telemetry
+window as Suspicious. This is one preliminary observation
+and does not establish reliable intrusion detection.

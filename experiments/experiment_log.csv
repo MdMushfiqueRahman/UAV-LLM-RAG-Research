@@ -1,0 +1,4 @@
+experiment_id,date,model,ground_truth,prediction,confidence,rag_enabled
+EXP-001A,2026-10-28,Claude Opus 5.5,benign,Insufficient Evidence,Low,No
+EXP-001B,2026-10-28,GPT-6,benign,Suspicious,Medium,No
+EXP-002,2026-10-28,GPT-6,malicious,Suspicious,Medium,No
