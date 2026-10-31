@@ -6,95 +6,16 @@ Insufficient Evidence
 
 Analysis of all 10 telemetry records in sample S002 shows the following:
 
-|   |
-| - |
-
-Feature
-
-|   |
-| - |
-
-Observed behavior
-
-|   |
-| - |
-
-`timestamp`
-
-|   |
-| - |
-
-Increases from 376049018 to 376398930, with uneven intervals between records.
-
-|   |
-| - |
-
-`lat_x`
-
-|   |
-| - |
-
-Changes slightly from 36.20482059 to 36.20482069.
-
-|   |
-| - |
-
-`lon_x`
-
-|   |
-| - |
-
-Changes slightly from 138.2529156 to 138.2529158.
-
-|   |
-| - |
-
-`alt_x`
-
-|   |
-| - |
-
-Increases from 51.9745992 to 51.984768 by record 5, then decreases slightly to 51.98461133 by record 10.
-
-|   |
-| - |
-
-`satellites_used`
-
-|   |
-| - |
-
-Decreases consistently from 9.166666667 to 7.666666667 across all 10 records.
-
-|   |
-| - |
-
-`fix_type`
-
-|   |
-| - |
-
-Remains constant at 3 throughout all records.
-
-|   |
-| - |
-
-`jamming_indicator`
-
-|   |
-| - |
-
-Increases steadily from 41.1 to 42.0, rising by 0.1 in each successive record.
-
-|   |
-| - |
-
-`vel_m_s`
-
-|   |
-| - |
-
-Increases consistently from 1.24996674 to 2.2456668 across all 10 records.
+| Feature | Observed behavior |
+|---|---|
+| `timestamp` | Increases from 376049018 to 376398930, with uneven intervals between records. |
+| `lat_x` | Changes slightly from 36.20482059 to 36.20482069. |
+| `lon_x` | Changes slightly from 138.2529156 to 138.2529158. |
+| `alt_x` | Increases from 51.9745992 to 51.984768 by record 5, then decreases slightly to 51.98461133 by record 10. |
+| `satellites_used` | Decreases consistently from 9.166666667 to 7.666666667 across all 10 records. |
+| `fix_type` | Remains constant at 3 throughout all records. |
+| `jamming_indicator` | Increases steadily from 41.1 to 42.0, rising by 0.1 in each successive record. |
+| `vel_m_s` | Increases consistently from 1.24996674 to 2.2456668 across all 10 records. |
 
 Three simultaneous trends are particularly notable:
 
