@@ -1,0 +1,4 @@
+
+experiment_id,sample_id,model,prediction,confidence,classification_outcome,observation_accuracy,evidence_relevance,logical_consistency,alternative_explanations,unsupported_claims,response_file,notes
+B01-S001-GPT6,S001,GPT-6,Insufficient Evidence,Medium,Abstention,Supported,Supported,Supported,Supported,Supported,responses/S001_gpt6_response.md,Preliminary qualitative review; formal scoring pending
+B01-S002-GPT6,S002,GPT-6,Insufficient Evidence,High,Abstention,Supported,Supported,Supported,Supported,Supported,responses/S002_gpt6_response.md,Preliminary qualitative review; formal scoring pending

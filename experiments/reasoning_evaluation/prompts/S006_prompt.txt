@@ -1,0 +1,57 @@
+
+You are analyzing UAV telemetry for a cybersecurity research experiment.
+
+Your task is to classify the provided telemetry window and explain your decision using only the supplied observations.
+
+Instructions:
+
+1. Do not assume an attack occurred.
+2. Use only the supplied telemetry data.
+3. Do not invent sensor readings, events, or attack mechanisms.
+4. Do not assume measurement units or feature meanings that are not provided.
+5. Distinguish observed telemetry behavior from possible explanations.
+6. If the evidence does not support a definitive classification, select Insufficient Evidence.
+7. Do not claim that an attack is confirmed unless the supplied evidence supports that conclusion.
+
+Analyze all records in the telemetry window.
+
+Provide your answer in the following format:
+
+1. Classification:
+   Choose exactly one:
+   - Benign
+   - Malicious
+   - Insufficient Evidence
+
+2. Supporting telemetry observations:
+   Identify specific values, trends, or relationships from the records.
+
+3. Reasoning:
+   Explain why the observations support your classification.
+
+4. Alternative explanations:
+   Discuss plausible non-malicious explanations.
+
+5. Confidence:
+   Low, Medium, or High.
+   This is a qualitative assessment, not a calibrated probability.
+
+6. Additional evidence needed:
+   State what information would help verify your conclusion.
+
+Telemetry sample ID:
+S006
+
+Telemetry records:
+timestamp,lat_x,lon_x,alt_x,satellites_used,fix_type,jamming_indicator,vel_m_s
+384901895,36.20492562,138.252904,51.29631275,10.0,3,15.90909091,1.369000018
+384951883,36.20492642,138.2529038,51.2794885,10.0,3,16.13636364,1.373000023
+385001871,36.20492721,138.2529035,51.26266425,10.0,3,16.36363636,1.377000027
+385041861,36.20492801,138.2529033,51.24584,10.0,3,16.59090909,1.381000032
+385046861,36.20492872,138.2529035,51.2344292,10.0,3,16.81818182,1.385000036
+385101847,36.20492942,138.2529037,51.2230184,10.0,3,17.04545455,1.389000041
+385151835,36.20493013,138.2529039,51.2116076,10.0,3,17.27272727,1.393000045
+385201823,36.20493084,138.252904,51.2001968,10.0,3,17.5,1.39700005
+385251811,36.20493154,138.2529042,51.188786,10.0,3,17.72727273,1.401000055
+385301814,36.20493225,138.2529047,51.18144075,10.0,3,17.95454545,1.405000059
+

@@ -1,0 +1,57 @@
+
+You are analyzing UAV telemetry for a cybersecurity research experiment.
+
+Your task is to classify the provided telemetry window and explain your decision using only the supplied observations.
+
+Instructions:
+
+1. Do not assume an attack occurred.
+2. Use only the supplied telemetry data.
+3. Do not invent sensor readings, events, or attack mechanisms.
+4. Do not assume measurement units or feature meanings that are not provided.
+5. Distinguish observed telemetry behavior from possible explanations.
+6. If the evidence does not support a definitive classification, select Insufficient Evidence.
+7. Do not claim that an attack is confirmed unless the supplied evidence supports that conclusion.
+
+Analyze all records in the telemetry window.
+
+Provide your answer in the following format:
+
+1. Classification:
+   Choose exactly one:
+   - Benign
+   - Malicious
+   - Insufficient Evidence
+
+2. Supporting telemetry observations:
+   Identify specific values, trends, or relationships from the records.
+
+3. Reasoning:
+   Explain why the observations support your classification.
+
+4. Alternative explanations:
+   Discuss plausible non-malicious explanations.
+
+5. Confidence:
+   Low, Medium, or High.
+   This is a qualitative assessment, not a calibrated probability.
+
+6. Additional evidence needed:
+   State what information would help verify your conclusion.
+
+Telemetry sample ID:
+S002
+
+Telemetry records:
+timestamp,lat_x,lon_x,alt_x,satellites_used,fix_type,jamming_indicator,vel_m_s
+376049018,36.20482059,138.2529156,51.9745992,9.166666667,3,41.1,1.24996674
+376099001,36.2048206,138.2529156,51.9771414,9.0,3,41.2,1.36060008
+376153988,36.2048206,138.2529156,51.9796836,8.833333333,3,41.3,1.47123342
+376198977,36.2048206,138.2529156,51.9822258,8.666666667,3,41.4,1.58186676
+376243969,36.20482061,138.2529156,51.984768,8.5,3,41.5,1.6925001
+376248968,36.20482062,138.2529157,51.98473667,8.333333333,3,41.6,1.80313344
+376298954,36.20482064,138.2529157,51.98470533,8.166666667,3,41.7,1.91376678
+376343943,36.20482066,138.2529157,51.984674,8.0,3,41.8,2.02440012
+376348942,36.20482068,138.2529157,51.98464267,7.833333333,3,41.9,2.13503346
+376398930,36.20482069,138.2529158,51.98461133,7.666666667,3,42.0,2.2456668
+

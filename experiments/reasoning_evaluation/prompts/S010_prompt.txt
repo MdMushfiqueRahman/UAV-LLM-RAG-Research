@@ -1,0 +1,57 @@
+
+You are analyzing UAV telemetry for a cybersecurity research experiment.
+
+Your task is to classify the provided telemetry window and explain your decision using only the supplied observations.
+
+Instructions:
+
+1. Do not assume an attack occurred.
+2. Use only the supplied telemetry data.
+3. Do not invent sensor readings, events, or attack mechanisms.
+4. Do not assume measurement units or feature meanings that are not provided.
+5. Distinguish observed telemetry behavior from possible explanations.
+6. If the evidence does not support a definitive classification, select Insufficient Evidence.
+7. Do not claim that an attack is confirmed unless the supplied evidence supports that conclusion.
+
+Analyze all records in the telemetry window.
+
+Provide your answer in the following format:
+
+1. Classification:
+   Choose exactly one:
+   - Benign
+   - Malicious
+   - Insufficient Evidence
+
+2. Supporting telemetry observations:
+   Identify specific values, trends, or relationships from the records.
+
+3. Reasoning:
+   Explain why the observations support your classification.
+
+4. Alternative explanations:
+   Discuss plausible non-malicious explanations.
+
+5. Confidence:
+   Low, Medium, or High.
+   This is a qualitative assessment, not a calibrated probability.
+
+6. Additional evidence needed:
+   State what information would help verify your conclusion.
+
+Telemetry sample ID:
+S010
+
+Telemetry records:
+timestamp,lat_x,lon_x,alt_x,satellites_used,fix_type,jamming_indicator,vel_m_s
+394299606,36.20492913,138.2529112,51.85497033,11.0,3,35.51612903,0.4348709877
+394344587,36.20492889,138.2529112,51.8555585,11.0,3,35.32258065,0.4394193748
+394349586,36.20492864,138.2529111,51.85614667,11.0,3,35.12903226,0.4439677619
+394399574,36.2049284,138.2529111,51.85673483,11.0,3,34.93548387,0.448516149
+394444562,36.20492816,138.2529111,51.857323,11.0,3,34.74193548,0.4530645361
+394449561,36.20492798,138.2529111,51.85730583,11.0,3,34.5483871,0.4576129232
+394499549,36.20492781,138.2529111,51.85728867,11.0,3,34.35483871,0.4621613103
+394544537,36.20492764,138.2529111,51.8572715,11.0,3,34.16129032,0.4667096974
+394549537,36.20492746,138.2529111,51.85725433,11.0,3,33.96774194,0.4712580845
+394599527,36.20492729,138.2529111,51.85723717,11.0,3,33.77419355,0.4758064716
+

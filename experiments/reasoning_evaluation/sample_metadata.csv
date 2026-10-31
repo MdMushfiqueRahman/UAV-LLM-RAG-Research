@@ -1,0 +1,11 @@
+sample_id,ground_truth,start_row,end_row_inclusive,record_count,filename
+benign_01,benign,0,9,10,benign_01.csv
+benign_02,benign,770,779,10,benign_02.csv
+benign_03,benign,1540,1549,10,benign_03.csv
+benign_04,benign,2310,2319,10,benign_04.csv
+benign_05,benign,3090,3099,10,benign_05.csv
+malicious_01,malicious,3134,3143,10,malicious_01.csv
+malicious_02,malicious,3244,3253,10,malicious_02.csv
+malicious_03,malicious,3364,3373,10,malicious_03.csv
+malicious_04,malicious,3474,3483,10,malicious_04.csv
+malicious_05,malicious,3594,3603,10,malicious_05.csv

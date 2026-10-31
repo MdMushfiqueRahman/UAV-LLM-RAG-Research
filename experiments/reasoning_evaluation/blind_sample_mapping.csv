@@ -1,0 +1,11 @@
+blind_id,source_sample_id,ground_truth,start_row,end_row_inclusive,prompt_filename
+S001,benign_01,benign,0,9,S001_prompt.txt
+S002,malicious_01,malicious,3134,3143,S002_prompt.txt
+S003,benign_02,benign,770,779,S003_prompt.txt
+S004,malicious_02,malicious,3244,3253,S004_prompt.txt
+S005,benign_03,benign,1540,1549,S005_prompt.txt
+S006,malicious_03,malicious,3364,3373,S006_prompt.txt
+S007,benign_04,benign,2310,2319,S007_prompt.txt
+S008,malicious_04,malicious,3474,3483,S008_prompt.txt
+S009,benign_05,benign,3090,3099,S009_prompt.txt
+S010,malicious_05,malicious,3594,3603,S010_prompt.txt
