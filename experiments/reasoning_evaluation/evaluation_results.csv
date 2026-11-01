@@ -2,3 +2,11 @@
 experiment_id,sample_id,model,prediction,confidence,classification_outcome,observation_accuracy,evidence_relevance,logical_consistency,alternative_explanations,unsupported_claims,response_file,notes
 B01-S001-GPT6,S001,GPT-6,Insufficient Evidence,Medium,Abstention,Supported,Supported,Supported,Supported,Supported,responses/S001_gpt6_response.md,Preliminary qualitative review; formal scoring pending
 B01-S002-GPT6,S002,GPT-6,Insufficient Evidence,High,Abstention,Supported,Supported,Supported,Supported,Supported,responses/S002_gpt6_response.md,Preliminary qualitative review; formal scoring pending
+B01-S003-GPT6,S003,GPT-6,Insufficient Evidence,High,Abstention,Pending,Pending,Pending,Pending,Pending,responses/S003_gpt6_response.md,Preliminary evidence review completed; formal reasoning assessment pending
+B01-S004-GPT6,S004,GPT-6,Insufficient Evidence,Medium,Abstention,Pending,Pending,Pending,Pending,Pending,responses/S004_gpt6_response.md,Preliminary evidence review completed; formal reasoning assessment pending
+B01-S005-GPT6,S005,GPT-6,Insufficient Evidence,Medium,Abstention,Pending,Pending,Pending,Pending,Pending,responses/S005_gpt6_response.md,Preliminary review completed; formal reasoning assessment pending
+B01-S006-GPT6,S006,GPT-6,Insufficient Evidence,Medium,Abstention,Pending,Pending,Pending,Pending,Pending,responses/S006_gpt6_response.md,Preliminary review completed; formal reasoning assessment pending
+B01-S007-GPT6,S007,GPT-6,Insufficient Evidence,Medium,Abstention,Pending,Pending,Pending,Pending,Pending,responses/S007_gpt6_response.md,Preliminary review completed; formal reasoning assessment pending
+B01-S008-GPT6,S008,GPT-6,Insufficient Evidence,Medium,Abstention,Pending,Pending,Pending,Pending,Pending,responses/S008_gpt6_response.md,Preliminary review completed; formal reasoning assessment pending
+B01-S009-GPT6,S009,GPT-6,Insufficient Evidence,High,Abstention,Pending,Pending,Pending,Pending,Pending,responses/S009_gpt6_response.md,Preliminary review completed; formal reasoning assessment pending
+B01-S010-GPT6,S010,GPT-6,Insufficient Evidence,Low,Abstention,Pending,Pending,Pending,Pending,Pending,responses/S010_gpt6_response.md,Preliminary review completed; formal reasoning assessment pending
