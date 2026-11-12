@@ -1,0 +1,65 @@
+# Telemetry Analysis: Sample S001
+
+## 1. Classification
+
+**Insufficient Evidence**
+
+The window shows no clear signs of malicious activity, and its behavior is broadly consistent with a stable, near-stationary platform. However, the window is short, there is no baseline, and the meanings and units of key fields (especially `jamming_indicator`) are not defined. The data does not support a definitive Benign or Malicious label.
+
+## 2. Supporting Telemetry Observations
+
+**Timestamps**
+- There are 10 records, spanning 258725029 to 259047572, a difference of 322,543 timestamp units. The units are not specified.
+- The intervals between records are irregular: 117,580; 4,999; 4,999; 49,991; 19,625; 30,365; 44,992; 44,993; 4,999.
+
+**Position (`lat_x`, `lon_x`)**
+- `lon_x` is constant at 138.2529156 across all records.
+- `lat_x` rises slightly and monotonically, from 36.20481158 to 36.20481162. That is a change of 0.00000004 in the recorded value, in the last decimal places shown.
+
+**Altitude (`alt_x`)**
+- It decreases monotonically from 51.336754 to 51.3325398, a total change of about 0.0042 in the recorded value.
+- The step sizes follow a regular pattern:
+  - The first two records are identical (51.336754).
+  - The next two steps are about 0.000136 each.
+  - Five consecutive steps are exactly 0.000698 each (51.336483 → 51.335785 → 51.335087 → 51.334389 → 51.333691 → 51.332993).
+  - The final step is about 0.000453.
+- The 0.000698 steps occur over very different timestamp intervals (49,991; 19,625; 30,365; 44,992; 44,993).
+
+**Velocity (`vel_m_s`)**
+- All values are small, between 0.008 and 0.020.
+- From 0.020 to 0.008, the value falls by exactly 0.0024 per record (0.0200 → 0.0176 → 0.0152 → 0.0128 → 0.0104 → 0.0080).
+- It then rises by exactly 0.0005 per record (0.0085 → 0.0090 → 0.0095 → 0.0100).
+- These steps are uniform even though the time intervals between records vary.
+
+**GNSS status**
+- `satellites_used` is constant at 11.0.
+- `fix_type` is constant at 3.
+
+**`jamming_indicator`**
+- It holds at 47.0 for the first six records.
+- It then rises by 0.1 per record to 47.4 over the last four records.
+
+## 3. Reasoning
+
+**Observations that do not suggest interference:**
+- The satellite count and fix type are completely stable.
+- Position and altitude change only by tiny amounts.
+- There are no jumps, dropouts, or discontinuities in position, altitude, or velocity.
+- The velocity field stays near zero, consistent with the very small positional changes.
+
+Taken together, the data is internally consistent with a platform holding nearly still.
+
+**Observations that cannot be interpreted without more context:**
+- **`jamming_indicator`:** Its scale, units, and normal range are not provided. A value of 47 cannot be judged high or low without a baseline. The rise from 47.0 to 47.4 is small and gradual, but its significance cannot be assessed from this window.
+- **Uniform step patterns:** The constant altitude and velocity increments occur regardless of the irregular time spacing. This is an observable regularity. It could reflect how the data was logged, resampled, interpolated, or merged. It is not, by itself, evidence of manipulation.
+- **Limits of stability as evidence:** A stable, consistent stream does not rule out an attack that produces plausible values. Equally, there is no supplied evidence that such an attack occurred. Stability alone cannot confirm either case.
+
+**Why not Malicious:** No observation directly indicates an attack. There are no abrupt position shifts, no loss or degradation of fix, no satellite count anomalies, and no inconsistency between velocity and position.
+
+**Why not Benign:** The window is short, there is no reference baseline or ground truth, and `jamming_indicator` is uninterpretable. These gaps prevent a confident benign determination. The evidence leans toward normal behavior, but not definitively.
+
+## 4. Alternative Explanations
+
+- **Small drift and indicator movement:** The tiny latitude and altitude changes and the small `jamming_indicator` rise may reflect ordinary sensor noise, receiver estimation drift, or normal changes in the signal environment.
+- **Regular step patterns:** The uniform increments may come from data processing, such as interpolation, upsampling, synchronizing streams with different rates, or forward-filling between updates. Processing artifacts are a plausible non-malicious cause.
+- **Platform state:** The data is consistent with a platform that is hovering, landed, or otherwise nearly stationary. This cannot be confir

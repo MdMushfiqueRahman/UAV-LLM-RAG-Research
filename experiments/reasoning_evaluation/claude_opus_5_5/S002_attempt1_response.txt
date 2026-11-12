@@ -1,0 +1,91 @@
+# Telemetry Analysis: Sample S002
+
+## 1. Classification
+**Insufficient Evidence**
+
+## 2. Supporting telemetry observations
+
+**Timestamps (10 records, total span 349,912 units)**
+- Intervals between records are irregular: 49,983; 54,987; 44,989; 44,992; **4,999**; 49,986; 44,989; **4,999**; 49,988.
+- Two intervals are about one-tenth the length of the others.
+
+**satellites_used**
+- Decreases monotonically from 9.166666667 to 7.666666667.
+- Each step is exactly 1/6 (≈0.1667).
+- Values are fractional, which is unusual for a count. This suggests averaging, interpolation, or other processing.
+
+**jamming_indicator**
+- Increases monotonically from 41.1 to 42.0.
+- Each step is exactly +0.1, with no variation.
+
+**vel_m_s**
+- Increases monotonically from 1.24996674 to 2.2456668, about an 80% increase.
+- Each step is exactly +0.11063334.
+
+**alt_x (piecewise linear)**
+- Records 1–5: increases by exactly +0.0025422 per record (51.9745992 → 51.984768).
+- Records 5–10: decreases by about −0.0000313 per record (51.984768 → 51.98461133).
+- The total change is about 0.01 units.
+
+**lat_x / lon_x**
+- lat_x changes from 36.20482059 to 36.20482069, a total change of 1×10⁻⁷. Steps are 0 to 2×10⁻⁸, near the displayed precision.
+- lon_x changes from 138.2529156 to 138.2529158, a total change of 2×10⁻⁷.
+- Position is nearly constant across the window.
+
+**fix_type**
+- Constant at 3 in all records.
+
+**Relationships**
+- **Inverse trend:** jamming_indicator rises while satellites_used falls, in lockstep, record by record.
+- **Per-record, not per-time, changes:** velocity, satellites_used, jamming_indicator and alt_x (records 1–5) change by identical amounts per record, even when the interval is about 5,000 units instead of about 50,000. If these values tracked a physical process over time, the implied rate of change would vary about tenfold between records.
+- **Velocity vs. position:** velocity rises steadily, but position changes very little. Whether these are inconsistent cannot be determined, because units for position, time and velocity are not supplied.
+
+## 3. Reasoning
+
+**Pattern consistent with interference (but not conclusive)**
+- The window shows a pattern that could fit signal interference: a rising jamming_indicator alongside a declining satellite count.
+- However, several factors prevent a Malicious classification:
+  - **No baseline or threshold.** The scale and normal range of jamming_indicator are not provided. A value of 41–42 cannot be judged high or low, and a 0.9 rise may be insignificant.
+  - **No loss of positioning capability.** fix_type stays at 3 throughout and satellites_used stays above 7.6. The window does not show a fix degradation or loss event.
+  - **No clear manipulation of position.** Position is essentially stable. There is no jump, drift, or teleport-like discontinuity of the kind associated with position falsification.
+
+**Pattern suggesting data processing rather than raw measurement**
+- Exact constant increments per record, regardless of irregular time spacing, are atypical of raw sensor output.
+- Fractional satellite counts add to this impression.
+- This points toward interpolated, resampled, smoothed or synthetically generated data. That is a data-provenance observation, not evidence of an attack.
+- It also means the trends may reflect the processing method rather than real vehicle or RF behavior.
+
+**Velocity relationship is ambiguous**
+- The steadily increasing vel_m_s alongside near-static position could suggest inconsistency.
+- Without confirmed units, coordinate system, or the time base of the timestamps, this cannot be established as a real anomaly.
+
+**Conclusion**
+- The data contains features worth investigating.
+- It does not provide enough to classify the window as either Benign or Malicious.
+
+## 4. Alternative explanations
+
+- **Environmental effects:** Satellite visibility can decline due to obstruction, multipath or geometry changes. Background RF noise can vary naturally. Either could produce the observed co-trend without malicious intent.
+- **Dataset preprocessing:** Interpolation, rolling averages, or merging of streams with different sampling rates could produce:
+  - fractional satellite counts,
+  - perfectly linear trends,
+  - irregular timestamps.
+- **Synthetic or labeled experimental data:** The window may come from a simulated or generated dataset. Linear ramps may be artifacts of how a scenario (benign or attack) was constructed.
+- **Velocity from a different source:** vel_m_s may come from a source other than GNSS position (for example, a commanded or estimated value). It may also be on a different time base, which would explain the apparent mismatch with position.
+- **Normal flight phase:** Gradual acceleration from hover or near-hover is a plausible operational behavior.
+
+## 5. Confidence
+**Medium** that Insufficient Evidence is the appropriate classification. The window shows suggestive co-trends, but it lacks baselines, units and a clear anomalous event. The apparent processing artifacts further limit interpretation.
+
+## 6. Additional evidence needed
+
+- **Feature definitions and units:** timestamp units, coordinate units, altitude units, and confirmation of the velocity units and source.
+- **jamming_indicator context:** its scale, normal operating range, and any alerting thresholds used in this dataset.
+- **fix_type encoding:** what value 3 represents in this system.
+- **Longer time window:** a baseline period before and after this sample, to see whether the trends continue, reverse, or culminate in fix loss or position jumps.
+- **Data provenance:** whether values are raw, interpolated, averaged or simulated, and why satellites_used is fractional.
+- **Independent cross-checks:**
+  - IMU/accelerometer data, to validate the velocity increase against physical acceleration,
+  - barometric altitude versus GNSS altitude,
+  - GNSS quality metrics (such as signal-to-noise ratios, dilution of precision, and position accuracy estimates).
+- **Ground truth:** flight logs, mission commands, or experiment labels indicating whether an attack scenario was active during this window.

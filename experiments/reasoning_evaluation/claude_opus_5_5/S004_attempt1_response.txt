@@ -1,0 +1,131 @@
+# Telemetry Analysis: Sample S004
+
+## 1. Classification
+
+**Insufficient Evidence**
+
+## 2. Supporting telemetry observations
+
+**Timestamps (10 records)**
+- Range: 380003072 to 380352989. Total span: 349,917 timestamp units. The units are not specified.
+- Intervals between records are irregular: 49,988; 44,990; 44,989; **5,001**; 54,984; 39,995; **4,996**; 49,987; 54,987.
+- Two intervals (records 4→5 and 7→8) are about one-tenth the size of the others.
+
+**satellites_used**
+- Values are non-integer: 6.888…, 7.0, 7.111…, up to 7.888….
+- Each record increases by exactly 0.1111… (1/9). The rise is perfectly linear.
+- The step stays the same even across the short intervals, so the change is uniform per record, not per unit time.
+
+**fix_type**
+- Constant at 3 across all records.
+
+**jamming_indicator**
+- Rises from 13.259 to 16.926, an increase of about 3.67, or about 28%.
+- Each record adds a constant 0.40741 (11/27). The rise is perfectly linear per record.
+- This happens while satellites_used is also rising.
+
+**vel_m_s**
+- Rises from 0.72419 to 0.77952.
+- Each record adds a constant ≈0.0061481. This is also perfectly linear per record.
+
+**alt_x**
+- Decreases monotonically from 51.8458 to 51.8121. Total change ≈ −0.0337.
+- The changes form piecewise-constant segments:
+  - Record 1→2: −0.0020044
+  - Records 2→7: −0.003186, repeated five times
+  - Records 7→10: −0.0052634, repeated three times
+
+**lat_x and lon_x**
+- lat_x increases monotonically.
+  - Per-record steps are about 3.4–3.8×10⁻⁷ through record 7.
+  - From record 7 onward, the steps are 4.8×10⁻⁷.
+- lon_x changes by only about 1–3×10⁻⁷ per record. The direction is +1×10⁻⁷ first, then consistently negative.
+- The step-size change in lat_x and lon_x occurs at the same record transition (7→8) where the alt_x step changes.
+
+## 3. Reasoning
+
+**What the observations show**
+- Four fields change by exactly constant per-record increments: satellites_used, jamming_indicator, vel_m_s, and segments of alt_x.
+- The position step changes coincide at a shared breakpoint.
+- satellites_used takes fractional values.
+
+**Most direct interpretation**
+- These features indicate the window is processed data, not raw samples. Possible processes include interpolation, resampling, smoothing/averaging, or synthetic generation.
+- Raw satellite counts would normally be integers. Fractional values strongly suggest interpolation or averaging between two endpoint values.
+
+**Why this limits any conclusion**
+- If the values are interpolated, the window mainly reflects the endpoints of the interpolation. It does not reflect independent real-time measurements.
+- This limits what can be concluded about the underlying vehicle or receiver state.
+
+**Evidence for Malicious is weak**
+- The jamming_indicator does rise steadily, by about 28%.
+- However, the scale, baseline, and alarm thresholds of this field are not provided. Whether 13–17 is low, normal, or elevated cannot be determined from the data.
+- The other GNSS-quality fields do not show degradation commonly associated with interference:
+  - fix_type stays at 3.
+  - satellites_used increases rather than decreases.
+- The position track is smooth and monotonic. There are no jumps or discontinuities.
+- Speed changes gradually.
+- I am not assuming what these values should look like under any specific attack. The point is that no field shows an abrupt or inconsistent change that would independently indicate manipulation.
+
+**Evidence for Benign is also incomplete**
+- The jamming trend is unexplained.
+- The interpolation-like structure could result from preprocessing. It could also, in principle, result from data substitution or fabrication.
+- The data alone cannot distinguish between these.
+
+**Consistency checks I could not perform**
+- I could not check whether vel_m_s is consistent with the position changes.
+- Doing so would require assuming the units of lat_x, lon_x, and the timestamps, which are not provided.
+
+The window therefore supports neither a Benign nor a Malicious classification with adequate confidence.
+
+## 4. Alternative explanations
+
+**For the linear, fractional, and piecewise-constant patterns**
+- Dataset preprocessing, such as interpolating lower-rate GNSS messages onto a common timeline or merging multiple log streams.
+- Moving-average or other smoothing applied during feature extraction.
+- Synthetic or simulated data generated for the research dataset.
+- The irregular timestamps, including the roughly 5,000-unit gaps, may reflect merged message streams with differing rates.
+
+**For the rising jamming_indicator**
+- Normal environmental variation in RF noise.
+- Changes in the receiver's surroundings or antenna orientation.
+- Electromagnetic noise from onboard electronics as motor load changes.
+- Interpolation between two endpoint values with no meaningful intermediate behavior.
+- The value range may be ordinary for this receiver. Its scale is not given.
+
+**For the slow altitude decrease, small position drift, and low speed**
+- Normal slow movement or station-keeping.
+- Ordinary GNSS position and altitude drift.
+
+## 5. Confidence
+
+**Medium** confidence that Insufficient Evidence is the appropriate classification.
+
+- **High** confidence that the data shows strong signs of interpolation or processing.
+- **Low** confidence in any judgment about whether malicious activity is present.
+
+## 6. Additional evidence needed
+
+**Field definitions and units**
+- Timestamp units, the coordinate reference for lat_x/lon_x/alt_x, and the meaning and scale of jamming_indicator.
+- Normal and alarm thresholds for jamming_indicator on this receiver.
+
+**Data provenance**
+- Whether the records are raw, interpolated, resampled, averaged, or synthetic.
+- If processed, the method used and the original raw samples.
+
+**Baseline data**
+- Telemetry from the same vehicle and receiver during known-benign operation, including typical jamming_indicator levels and satellite counts.
+
+**Longer context**
+- Records before and after this window, to see whether the jamming trend continues, plateaus, or reverses.
+- Context to check whether position or velocity later diverges.
+
+**Additional GNSS quality fields, if available**
+- Carrier-to-noise density (C/N0) per satellite, noise floor or AGC values, HDOP/VDOP, EPH/EPV, and spoofing-detection flags.
+
+**Independent sensors for cross-validation**
+- IMU/accelerometer data, barometric altitude, optical flow, or visual odometry, to test whether GNSS-derived position and velocity agree with other sources.
+
+**Ground truth**
+- Experiment logs indicating whether interference or spoofing was introduced during this time window.

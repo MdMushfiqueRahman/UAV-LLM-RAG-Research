@@ -1,0 +1,94 @@
+# Telemetry Analysis: Sample S003
+
+## 1. Classification
+
+**Insufficient Evidence**
+
+## 2. Supporting telemetry observations
+
+**Constant fields**
+- `satellites_used` is 11.0 in all 10 records.
+- `fix_type` is 3 in all 10 records.
+
+**Timestamps (intervals between consecutive records)**
+- The intervals are: 49991, 44992, 44992, **4999**, 54991, 49990, 44992, 55042, 49939.
+- Most intervals fall between about 45,000 and 55,000. The interval between records 4 and 5 is about one-tenth of the others.
+
+**jamming_indicator**
+- It falls from 20.8 to 18.28.
+- Every step is exactly −0.28, with no variation.
+- The step stays −0.28 even across the short 4999 interval.
+
+**vel_m_s**
+- It falls from 0.0746000012 to 0.02636000192.
+- Every step is exactly −0.00536.
+- Each value has small trailing digits (e.g., …0012, …00128, …00136) that grow by a fixed amount each record.
+- The step stays the same across the short interval.
+
+**alt_x**
+- Records 1–4 rise by exactly +0.0019684 per step.
+- Records 4–9 rise by exactly +0.0005884 per step.
+- The step size changes at the same record where the short timestamp interval occurs.
+- After that, the step stays at +0.0005884 even though later intervals vary from 44,992 to 55,042.
+- Record 10 reverses direction (−0.0008042), ending at 51.6616298.
+
+**lat_x**
+- It increases monotonically from 36.2048176 to 36.20481814.
+- The steps are approximately 8, 9, 9, 5, 5, 5, 5, 5, 3 units in the 8th decimal place.
+- Records 4→5 (interval 4999) show the same step as records 5→6 (interval 54991).
+
+**lon_x**
+- It changes only from 138.2529211 to 138.2529214, at the limit of the displayed precision.
+
+## 3. Reasoning
+
+**What the data shows**
+- Several fields change by perfectly constant amounts per record: `jamming_indicator`, `vel_m_s`, and `alt_x` in segments.
+- These changes do not scale with the elapsed time between records.
+- Field-to-field relationships are inconsistent with the timing. For example, a 4999 interval and a 54991 interval produce identical latitude steps.
+- `satellites_used` and `fix_type` show no degradation.
+- `jamming_indicator` decreases steadily through the window rather than increasing.
+
+**What this suggests**
+- The pattern is consistent with values that were generated, interpolated, resampled, or otherwise processed. It does not look like independent raw sensor measurements.
+- It is not possible to attribute this to malicious activity from the supplied data.
+
+**Why no malicious classification**
+- No meaning, units, or threshold is given for `jamming_indicator`. Whether values around 18–21 are normal or elevated cannot be judged.
+- A steady decrease is not by itself evidence of interference.
+- There is no clean baseline, no comparison window, and no independent reference (e.g., IMU, barometer, or ground truth) to show that the reported position or velocity is false.
+- Confirming spoofing or injection would require evidence the window does not contain.
+
+**Why no benign classification**
+- The perfectly linear progressions and the timing inconsistencies are real anomalies.
+- They cannot be dismissed as normal sensor behavior based only on this window.
+
+## 4. Alternative explanations
+
+**Non-malicious explanations for the anomalies**
+- **Interpolation or resampling during preprocessing.** Merging logs at different rates often produces linear fills between anchor points. The trailing float digits in `vel_m_s` are consistent with float32-to-decimal conversion of interpolated values.
+- **Synthetic or simulated data.** A dataset generator might ramp values linearly.
+- **Timestamp jitter or logging artifacts.** These could explain the 4999 interval without any effect on navigation.
+- **Benign steady behavior.** A slow, monotonic drift in position and altitude while the vehicle is nearly stationary or slowly settling is plausible. Small, decreasing `vel_m_s` values fit this reading.
+- **Normal environmental variation.** The `jamming_indicator` change could reflect the receiver's ordinary noise and interference environment if this range is typical for the hardware.
+
+**A possible malicious explanation (not supported as confirmed)**
+- Linearly progressing values could also be consistent with injected or fabricated telemetry.
+- However, the same signatures arise from preprocessing, and nothing in the window distinguishes the two.
+
+## 5. Confidence
+
+**Medium**
+
+- I am fairly confident the data does not support either a definitive Benign or Malicious conclusion.
+- Without context about how the data was produced, I cannot determine whether the regularities come from processing or manipulation.
+
+## 6. Additional evidence needed
+
+- **Field definitions and units** for all fields, especially `jamming_indicator` (scale, normal range, alert thresholds) and the timestamp units.
+- **Data provenance:** whether these are raw receiver outputs or interpolated, resampled, or synthetic values, plus the original sampling rates.
+- **A longer telemetry window and a known-clean baseline** from the same vehicle and receiver, for comparison.
+- **Additional GNSS quality metrics,** such as noise level, signal strength per satellite, position and velocity accuracy estimates, and DOP values.
+- **Independent sensor data** to cross-check position, altitude, and velocity: IMU, barometer, optical flow, or ground-truth positioning.
+- **Experiment labels or logs** showing whether a spoofing or jamming test was active during this window.
+- **Flight mode and commanded setpoints,** to tell whether the slow drift was commanded or expected.
