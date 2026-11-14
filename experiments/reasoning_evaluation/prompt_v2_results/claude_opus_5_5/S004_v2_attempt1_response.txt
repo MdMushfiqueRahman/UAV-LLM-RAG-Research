@@ -1,0 +1,79 @@
+# Telemetry Analysis: Sample S004
+
+## 1. Classification
+**Insufficient Evidence**
+
+## 2. Supporting telemetry observations
+
+**Values change by a fixed amount at every step**
+- **satellites_used** rises from 6.888888889 to 7.888888889, by exactly about 0.1111 (1/9) per record. The values are non-integer.
+- **jamming_indicator** rises from 13.25925926 to 16.92592593, by about 0.4074 (11/27) per record, a total increase of about 3.67.
+- **vel_m_s** rises from 0.7241851852 to 0.7795185185, by about 0.0061481 per record.
+- **alt_x** falls from 51.8458074 to 51.8120828:
+  - Records 1–2: step of about 0.0020.
+  - Records 2–7: about 0.003186 per step.
+  - Records 7–10: about 0.0052634 per step.
+- **lat_x** rises from 36.20484765 to 36.2048513:
+  - About 3.7–3.8e-7 per step through record 7.
+  - About 4.8e-7 per step afterward.
+- **lon_x** drifts slightly downward overall, from 138.2529189 to 138.2529174. The first step is a small increase (…189 to …190).
+- **fix_type** is constant at 3 in all records.
+
+**Timestamp intervals are irregular, but feature steps are not**
+- The intervals are approximately 49988, 44990, 44989, 5001, 54984, 39995, 4996, 49987 and 54987.
+- Two intervals (records 4→5 and 7→8) are about one-tenth the length of the others.
+- Feature increments are the same size across short and long intervals. Examples:
+  - The jamming indicator moves by about 0.407 whether the gap is about 5000 or about 55000.
+  - The lat/alt step change at record 8 follows a short interval, not a long one.
+
+**Relationships between features**
+- The jamming indicator and satellite count rise together.
+- Fix type does not degrade.
+- Position changes are small and smooth, and velocity changes only slightly.
+
+## 3. Reasoning
+
+**Evidence for Malicious**
+- The jamming_indicator rises monotonically, by about 28% across the window.
+- A sustained, steady rise in such an indicator could be consistent with growing RF interference.
+- A smooth, low-rate position drift with a stable 3D fix is also a pattern sometimes discussed in GNSS spoofing.
+
+**Evidence for Benign, or against an attack**
+- No GNSS degradation co-occurs with the jamming rise:
+  - Satellite count increases rather than decreases.
+  - Fix type stays at 3.
+  - This does not match the degradation commonly associated with jamming, though it does not rule out spoofing.
+- Position, altitude and velocity change smoothly and modestly. No jumps or discontinuities appear.
+- Without known units or a reference trajectory, the drift cannot be shown to diverge from true motion.
+
+**Why the window does not discriminate between hypotheses**
+- Every feature changes linearly by record index, regardless of the time interval between records.
+- Satellites_used takes fractional values that step in exact ninths.
+- These patterns strongly suggest the values were interpolated, resampled or smoothed during preprocessing, rather than being raw sensor readings.
+- If so, the trends mainly reflect the processing, and fine-grained relationships cannot be reliably interpreted.
+
+**Why the missing information matters here**
+- The jamming_indicator's scale and normal range are not provided. A level of 13–17 cannot be judged as normal or elevated, and a rise of about 3.7 may or may not be meaningful.
+- This is not simply a matter of a short window. The one feature pointing toward Malicious is uninterpretable without its scale, and the other features do not corroborate it.
+
+## 4. Alternative explanations
+
+- **Data processing:** linear interpolation or aggregation, such as averaging across time bins, would explain the fractional satellite counts, the constant per-record increments and the mismatch with timestamp spacing.
+- **Normal environmental variation:** a jamming indicator can fluctuate with ambient RF noise, the UAV's own electronics, or changes in antenna orientation or position. Such variation may be benign.
+- **Normal flight:** a slowly moving or hovering UAV with gradual position and altitude change and slight acceleration is consistent with ordinary low-speed flight or position-hold drift.
+- **Normal satellite geometry:** an improving satellite count could reflect satellites rising above the horizon.
+
+## 5. Confidence
+**Medium** that the evidence does not meaningfully distinguish the two hypotheses.
+
+There is low confidence in either Benign or Malicious specifically.
+
+## 6. Additional evidence needed
+
+- **Indicator definition:** the jamming_indicator's definition, units and baseline or threshold values for this platform.
+- **Raw data:** unprocessed records, with integer satellite counts and true sample-by-sample values, plus documentation of any interpolation or resampling.
+- **Units:** timestamp units, to check whether position change agrees with vel_m_s over the actual elapsed time.
+- **Wider context:** a longer window, to see whether the jamming trend continues, plateaus or reverses, and how it compares with known-benign flights.
+- **Additional GNSS quality metrics:** carrier-to-noise density (C/N0), HDOP/VDOP, noise level, AGC and spoofing-detection flags.
+- **Independent cross-checks:** IMU, barometer, optical flow or visual odometry, compared against the GNSS position, velocity and altitude, to detect any divergence consistent with spoofing.
+- **Ground truth:** the flight plan or commanded trajectory, to compare against the reported positions.

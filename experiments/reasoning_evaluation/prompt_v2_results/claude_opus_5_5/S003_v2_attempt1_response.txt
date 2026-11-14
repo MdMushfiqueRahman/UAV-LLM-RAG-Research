@@ -1,0 +1,93 @@
+# Telemetry Analysis: Sample S003
+
+## 1. Classification
+**Benign** (low confidence)
+
+## 2. Supporting telemetry observations
+
+**GNSS status**
+- `satellites_used` is 11.0 in all 10 records.
+- `fix_type` is 3 in all 10 records.
+- There are no dropouts, fix downgrades or satellite-count changes.
+
+**jamming_indicator**
+- It decreases monotonically from 20.8 to 18.28.
+- Every step is exactly −0.28.
+- It never rises during the window.
+
+**vel_m_s**
+- It decreases monotonically from 0.0746 to 0.02636.
+- Every step is exactly −0.00536.
+- Values stay small throughout the window.
+
+**Position**
+- `lat_x` increases monotonically by very small steps: +8e-8, then +9e-8 twice, then +5e-8 five times, then +3e-8.
+- `lon_x` changes only in the 7th decimal: 138.2529211 to 138.2529214, in +1e-7 steps.
+- There are no jumps, reversals or discontinuities in horizontal position.
+
+**alt_x**
+- It increases by exactly +0.0019684 per record for the first three intervals (51.6535868 to 51.659492).
+- It then increases by exactly +0.0005884 per record for five intervals (to 51.662434).
+- It finally decreases by 0.0008042 (to 51.6616298).
+- Total variation across the window is about 0.009, in unspecified units.
+
+**Timestamps**
+- Most intervals are roughly 45,000 to 55,000 counts: 49991, 44992, 44992, 54991, 49990, 44992, 55042, 49939.
+- One interval is about ten times shorter: 4999, between 288442358 and 288447357.
+
+**Cross-feature relationships**
+- The per-record increments of `jamming_indicator`, `vel_m_s`, and each `alt_x` segment are identical regardless of the time interval. The 4999-count interval shows the same jamming and velocity decrement as the ~50,000-count intervals.
+- The change in step size for `lat_x` and `alt_x` happens at the same record (record 4 to 5), which is also where the short timestamp interval occurs.
+
+## 3. Reasoning
+
+**Evidence against Malicious**
+- The GNSS solution quality indicators (`satellites_used`, `fix_type`) are fully stable.
+- The `jamming_indicator` trends downward, not upward. Its absolute scale and threshold meaning are not provided, so I do not interpret the value ~20 as high or low.
+- Position, altitude and velocity are mutually coherent:
+  - Speed is small and decreasing.
+  - Horizontal position changes are tiny and their step size shrinks over the window.
+  - Altitude varies only slightly.
+- I observe no position jumps, no conflict between reported velocity and position change, and no loss of fix. These are the kinds of inconsistencies that would more specifically suggest spoofing or jamming effects.
+
+**Evidence that could point toward Malicious**
+- The values are strikingly regular. Exactly constant per-record decrements in two independent quantities, piecewise-constant altitude increments, and increments that ignore uneven timestamp spacing are not typical of raw, noisy sensor output.
+- Fabricated or injected telemetry could look like this.
+- However, this regularity is equally or more consistent with dataset processing, such as linear interpolation between anchor points.
+- The regularity is not tied to any attack-specific signature. It does not show that the navigation solution was manipulated, or which feature would be targeted.
+
+**Overall weighing**
+- The regularity is an anomaly of data generation, but it does not specifically discriminate attack from benign.
+- The physically meaningful content points toward normal operation: stable fix, non-increasing jamming indicator, coherent low-motion state.
+- This tilts the balance toward Benign.
+- Confidence stays low because the artifact-like structure means the values may not reflect raw sensor behavior. In that case they carry less information about either hypothesis.
+
+## 4. Alternative explanations
+
+**For the regular, linear patterns (non-malicious)**
+- The data may have been resampled, interpolated or synthesized between sparse logged values during dataset preparation.
+- Features may have been logged at different rates and aligned to a common timeline. This could also explain the anomalous 4999-count interval.
+
+**For the motion behavior**
+- The vehicle may be hovering or settling, with small drift and decaying speed.
+- It may be stationary, with small changes reflecting ordinary GNSS solution wander.
+
+**For the jamming_indicator decrease**
+- It may reflect normal fluctuation in the receiver's interference estimate.
+
+**For the Malicious hypothesis (considered, not established)**
+- The smooth, deterministic trends could in principle come from generated or injected data.
+- Nothing in the window confirms this. Without baseline data, it cannot be separated from interpolation artifacts.
+
+## 5. Confidence
+**Low**
+
+## 6. Additional evidence needed
+- **Raw, non-interpolated telemetry**, or documentation of the dataset's preprocessing and resampling method. This would show whether the linear patterns are artifacts.
+- **Timestamp units and logging rates per feature**, to explain the 4999-count interval.
+- **Definition, scale and typical range of `jamming_indicator`** for this receiver, plus baseline values from known-benign flights.
+- **Units and reference frames** for `alt_x`, `vel_m_s` and the position fields, to check velocity against position change quantitatively.
+- **Adjacent windows**, to see whether trends continue, reverse, or coincide with anomalies elsewhere.
+- **Additional receiver metrics**, such as C/N0 or SNR per satellite, HDOP/VDOP, noise or AGC indicators, and spoofing flags.
+- **Independent navigation sources**, such as IMU, barometer or optical flow, for cross-validation.
+- **Ground-truth labels** or flight logs describing the vehicle's commanded state during this window.

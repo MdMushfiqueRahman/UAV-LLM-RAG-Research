@@ -1,0 +1,78 @@
+# UAV Telemetry Analysis: Sample S001
+
+## 1. Classification
+**Benign**
+
+## 2. Supporting telemetry observations
+
+**Position (lat_x, lon_x)**
+- lon_x is constant at 138.2529156 across all 10 records.
+- lat_x moves from 36.20481158 to 36.20481162. That is a total change of 0.00000004 in the supplied units, in small monotonic steps.
+- There are no jumps, reversals, or discontinuities.
+
+**Altitude (alt_x)**
+- alt_x falls monotonically from 51.336754 to 51.3325398, a total change of about 0.0042.
+- Records 1–2 are identical (51.336754).
+- Records 2→3 and 3→4 each drop by about 0.000136.
+- Records 4→9 each drop by about 0.000698.
+- Record 9→10 drops by about 0.000453.
+- No abrupt steps occur.
+
+**Velocity (vel_m_s)**
+- Values are small throughout (0.008 to 0.020).
+- Records 1–6 fall linearly by 0.0024 per record (0.020 → 0.008).
+- Records 6–10 rise linearly by 0.0005 per record (0.008 → 0.010).
+
+**GNSS quality fields**
+- satellites_used is constant at 11.0.
+- fix_type is constant at 3.
+
+**jamming_indicator**
+- Constant at 47.0 for records 1–6.
+- Then rises by 0.1 per record: 47.1, 47.2, 47.3, 47.4 (records 7–10).
+
+**Timestamps**
+- Intervals are irregular: about 117580, 4999, 4999, 49991, 19625, 30365, 44992, 44993, 4999.
+- The per-record changes in velocity, altitude, and jamming_indicator are uniform even where the time gaps differ greatly. For example, velocity drops by 0.0024 over a ~5000 interval and also over a ~50000 interval.
+
+## 3. Reasoning
+
+**Evidence favoring Benign**
+- **Internal consistency between motion fields.** Near-zero velocity coincides with essentially stationary horizontal position and only a very small, smooth altitude change. The magnitude of the altitude drift looks plausibly compatible with the small reported velocities if the timestamps are in microseconds. That unit is an assumption, not given in the data, so this is only a plausibility check.
+- **No position discontinuities.** There are no jumps, teleports, or drift in lat/lon that is disconnected from the reported velocity.
+- **Stable GNSS solution quality.** Satellite count and fix_type do not change at all, so the window shows no degradation in solution quality.
+
+**Evidence that could favor Malicious, and why it is weak here**
+- **The rise in jamming_indicator.** The increase from 47.0 to 47.4 at the end of the window is the only feature trending in a direction that could be read as concerning.
+  - Its scale, units, and normal range are not provided, so I cannot say whether 47 is high or low.
+  - The rise is small (about 0.85% relative).
+  - It is not accompanied by any change in satellites_used, fix_type, or position behavior.
+  - Per the instructions, a single feature changing slightly, and an indicator's name, are not proof of interference.
+- **Slow, low-magnitude spoofing.** The smooth altitude and latitude drift could in principle be consistent with a gradual spoofing attempt. However, the drift is very small and coherent with the velocity readings, so nothing in the window specifically points to it.
+
+**Overall assessment**
+Several independent fields (position, altitude, velocity, satellite count, fix type) agree with each other and show no anomaly. The only potentially suspicious trend is a small change in an indicator whose scale is unknown. On balance, the observations meaningfully favor Benign.
+
+The missing baseline limits confidence but does not prevent a classification. The cross-field consistency is informative on its own.
+
+## 4. Alternative explanations (non-malicious)
+- **jamming_indicator rise.** This could reflect normal environmental RF variation, receiver noise, or ordinary fluctuation in the metric. Its normal operating range is unknown.
+- **Linear per-record steps.** The uniform steps in velocity, altitude, and jamming_indicator that do not scale with the irregular timestamp gaps may come from dataset processing. Possibilities include resampling, interpolation, or merging of sensor streams logged at different rates. This is a possible explanation, not an established fact.
+- **Small altitude and latitude drift.** This is consistent with normal GNSS solution noise, barometric/filter settling, or slight motion of a hovering or stationary vehicle.
+
+## 5. Confidence
+**Low**
+
+The supporting evidence is consistent, but several factors limit confidence:
+- The window is short.
+- The jamming_indicator scale is unknown.
+- The indicator trends upward monotonically at the very end of the window, which could be the onset of a change not captured here.
+- A slow-onset attack cannot be ruled out from these 10 records alone.
+
+## 6. Additional evidence needed
+- **jamming_indicator context:** its definition, scale, and typical baseline range for this receiver and environment.
+- **Subsequent records:** to see whether the jamming_indicator keeps rising and whether satellites_used, fix_type, or position begin to change.
+- **Timestamp units and the logging/resampling method:** to interpret the uniform per-record changes.
+- **Additional GNSS quality fields,** if available, such as noise/C/N0 values, HDOP/VDOP, position accuracy estimates, and spoofing/AGC indicators.
+- **Independent sensor data:** IMU, barometer, or optical flow, to cross-check whether GNSS-reported motion matches physical motion.
+- **Flight mode or mission context:** for example, whether the vehicle was hovering or landed, to confirm that near-zero velocity is expected.
