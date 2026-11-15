@@ -1,0 +1,86 @@
+# Telemetry Analysis: Sample S005
+
+## 1. Classification: **Benign**
+
+## 2. Supporting telemetry observations
+
+**Receiver status (stable throughout all 10 records)**
+- `satellites_used` stays at 11.0 in every record.
+- `fix_type` stays at 3 in every record.
+
+**Position (very small, smooth changes)**
+- `lat_x` falls from 36.20481883 to 36.20481841, a total change of about 4.2×10⁻⁷.
+- Per-record latitude steps are −1, −1, −4, −5, −4, −4, −4, −10 and −9 (×10⁻⁸). The changes are small and monotonic, with a modest increase in step size near the end.
+- `lon_x` rises from 138.2529198 to 138.2529203, changing only in the 7th decimal place.
+- No jumps, reversals or discontinuities appear in either coordinate.
+
+**Altitude (smooth, piecewise-linear rise)**
+- `alt_x` rises from 51.778516 to 51.8244576, a total of about 0.046.
+- The step sizes fall into three constant segments:
+  - 0.004902 for steps 1–2
+  - 0.00538 for steps 3–7
+  - 0.0046188 for steps 8–9
+
+**Jamming indicator (exactly linear decrease)**
+- `jamming_indicator` falls from 27.69565217 to 24.95652174.
+- It decreases by a constant ≈0.30434783 per record.
+
+**Velocity (exactly linear decrease)**
+- `vel_m_s` falls from 0.07534783 to 0.06947827.
+- It decreases by a constant ≈0.00065217 per record.
+- Both this series and the jamming indicator change by a fixed amount per record index.
+
+**Timestamps (irregular spacing)**
+- The gaps between records are 44994, 54986, 49992, 44989, **5000**, 49990, 49989, 49990 and 39992.
+- The gap between records 5 and 6 is about one-tenth of the others. Yet the jamming indicator and velocity still change by exactly the same amount across it.
+
+## 3. Reasoning
+
+**Evidence considered for Malicious**
+- The exact linear progressions, constant even across a much shorter time gap, do not look like raw sensor behavior. Raw measurements usually contain noise. This pattern could in principle fit synthetic or injected values.
+- The jamming indicator sits around 25–28 rather than near zero. However, its scale and meaning are not provided, so I cannot interpret this level as elevated or normal.
+- A spoofing attack might show position drift while the fix quality stays good. Here the position drift is tiny and smooth, so this pattern is not clearly present.
+
+**Evidence considered for Benign**
+- Satellite count and fix type are constant. Nothing suggests degraded or disrupted reception within the window.
+- Position and altitude change only by tiny, smooth amounts. No jumps occur, and nothing about the changes is physically implausible. The pattern is consistent with a near-stationary or slowly moving vehicle, matching the small, slowly changing velocity values.
+- The jamming indicator is decreasing, not rising, across the window.
+- The perfectly linear, index-based steps are better explained by a data-processing artifact than by an attack, though this is not established:
+  - Linear interpolation or resampling between sparser source samples would produce constant per-record steps that ignore the actual timestamp gaps.
+  - The piecewise-constant altitude steps also fit interpolation between successive source points.
+  - These regularities therefore describe the dataset's construction. On their own, they do not indicate manipulation of the UAV's navigation.
+
+**Decision**
+- No feature shows a meaningful deviation that specifically supports malicious activity: no position jumps, no satellite or fix changes, no rising jamming trend, and no clear position–velocity inconsistency.
+- The one unusual characteristic (exact linearity despite uneven timing) has a plausible processing explanation.
+- On balance, the observations favor Benign. Because the window is short, units are unknown and no baseline is available, confidence is limited but not eliminated.
+
+## 4. Alternative explanations
+
+**Non-malicious explanations for the observed patterns**
+- **Interpolation or upsampling:** Values may have been linearly interpolated between logged points, possibly from different source streams with different rates. This would explain the constant per-record steps and their independence from timestamp spacing.
+- **Hover or slow drift:** The tiny position changes, slow altitude rise and low velocity are consistent with station-keeping or gentle movement.
+- **Normal indicator variation:** The jamming indicator may simply vary within its normal operating range. Without its definition or scale, a value near 25–28 cannot be called anomalous.
+- **Logging artifacts:** The short 5000-unit timestamp gap may reflect logging jitter or merging of message streams.
+
+**The remaining malicious possibility**
+- Exact linearity could also arise from fabricated or replayed data.
+- Nothing in this window distinguishes that possibility from processing artifacts, so it remains a possibility rather than a supported conclusion.
+
+## 5. Confidence: **Low**
+
+- The absence of anomalies supports Benign.
+- Confidence is reduced by:
+  - the short window,
+  - unknown units and feature definitions (especially `jamming_indicator`),
+  - no baseline for the jamming level,
+  - processing artifacts that may mask raw sensor behavior.
+
+## 6. Additional evidence needed
+
+- **Feature definitions:** the definition, scale and normal range of `jamming_indicator`, plus the units of the timestamps and position fields.
+- **Raw data:** the original, non-interpolated telemetry and the preprocessing pipeline, to confirm whether the linear patterns come from resampling.
+- **Baseline:** a longer window, or data from flights known to be benign, to compare jamming levels and drift behavior.
+- **Additional GNSS quality metrics:** for example C/N0, HDOP/VDOP, noise level, spoofing flags and position accuracy estimates.
+- **Cross-sensor checks:** comparison against inertial (IMU/accelerometer), barometric altitude or optical-flow data to test whether GNSS position and velocity agree with independent sensors.
+- **Context:** flight mode or mission data (e.g., commanded hover) to confirm that near-stationary behavior was expected.

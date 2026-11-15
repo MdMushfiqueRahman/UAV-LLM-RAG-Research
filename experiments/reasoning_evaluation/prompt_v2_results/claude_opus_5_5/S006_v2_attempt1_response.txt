@@ -1,0 +1,86 @@
+# UAV Telemetry Analysis: Sample S006
+
+## 1. Classification
+
+**Benign** (low confidence)
+
+## 2. Supporting telemetry observations
+
+**GNSS status**
+- `satellites_used` is 10.0 in all 10 records.
+- `fix_type` is 3 in all 10 records.
+
+**Position (`lat_x`, `lon_x`)**
+- `lat_x` increases steadily from 36.20492562 to 36.20493225.
+  - Per-record increments are about 80 × 10⁻⁸ for records 1–4.
+  - They are about 70–71 × 10⁻⁸ for records 5–10.
+- `lon_x` stays within about 138.2529033–138.2529047.
+  - It dips slightly through record 4, then rises gradually.
+- There are no jumps, reversals, or discontinuities in position.
+
+**Altitude (`alt_x`)**
+- `alt_x` decreases monotonically from 51.2963 to 51.1814, a total change of about 0.115.
+- The decrease is piecewise linear:
+  - About −0.016824 per record for records 1–4.
+  - About −0.011411 per record for records 4–9.
+  - About −0.007345 for the final step.
+
+**Velocity (`vel_m_s`)**
+- `vel_m_s` rises from 1.369 to 1.405.
+- It increases by almost exactly 0.004 per record.
+
+**Jamming indicator (`jamming_indicator`)**
+- The indicator rises from 15.909 to 17.955.
+- It increases by exactly 0.22727 (5/22) per record, a total rise of about 13%.
+
+**Timestamps**
+- Most intervals are about 49,988–50,003 units.
+- Two intervals are irregular:
+  - 385001871 → 385041861 is about 39,990 units.
+  - 385041861 → 385046861 is 5,000 units.
+- Despite the 5,000-unit interval, the changes in `jamming_indicator`, `vel_m_s`, and `lat_x` across it are the same size as across the 50,000-unit intervals.
+
+## 3. Reasoning
+
+**Evidence for Malicious**
+- The jamming indicator rises steadily throughout the window. A monotonic increase in an interference-related metric could be consistent with growing interference.
+- Position and altitude are very smooth. Smoothness by itself does not rule out a carefully crafted false trajectory.
+- Across the 5,000-unit interval, position changes by roughly the same amount as across 50,000-unit intervals. Taken at face value, this would imply a much higher instantaneous rate of motion that `vel_m_s` does not reflect.
+
+**Evidence for Benign**
+- The jamming indicator's rise is not accompanied by any observable degradation:
+  - Satellite count is unchanged.
+  - Fix type is unchanged.
+  - Position shows no jumps, drift bursts, or noise increase.
+- Without a baseline or a defined scale, values of 16–18 cannot be called high. A 13% rise over 10 samples, with no corroborating effect, is weak evidence on its own.
+- Position, altitude, and velocity are mutually coherent. They describe gentle, continuous motion with steady northward progress, a slight descent, and slowly increasing speed. There are no contradictions between features.
+- The timestamp anomaly appears to be a data-processing pattern rather than a flight-behavior pattern:
+  - Every feature changes in piecewise-linear steps tied to record index, not elapsed time.
+  - The jamming indicator and velocity increase by identical amounts regardless of interval length.
+  - This pattern suggests interpolated or resampled data.
+  - In that case, the 5,000-unit interval reflects timestamping or resampling rather than a physical position jump.
+
+**Balance**
+- Malicious rests on a single changing feature (the jamming indicator) whose meaning and scale are undefined, plus a timing irregularity better explained by data processing.
+- Benign is supported by stable GNSS quality and consistent relationships across features.
+- The evidence leans Benign. However, the apparent interpolation limits how much the fine-grained behavior can reveal, which is why confidence is low.
+
+## 4. Alternative explanations
+
+- **Jamming indicator rise:** could reflect normal environmental RF variation, receiver behavior, or other ordinary conditions. It could also be an artifact of linear interpolation between two logged values.
+- **Linear increments and irregular timestamps:** consistent with dataset preprocessing, such as resampling, interpolation, or merging asynchronous logs. Logging jitter is another possibility.
+- **Slow climb in speed and slight descent:** consistent with normal flight control or maneuvering.
+- **Possible malicious explanation (not established):** sophisticated spoofing designed to keep the fix and trajectory smooth could appear similar. However, nothing in this window directly indicates it.
+
+## 5. Confidence
+
+**Low**
+
+## 6. Additional evidence needed
+
+- A baseline range and the units or definition for `jamming_indicator`, to judge whether 16–18 or the observed trend is anomalous.
+- A longer window showing whether the indicator keeps rising and whether satellites, fix type, or position quality later degrade.
+- Additional GNSS quality metrics, such as C/N0, HDOP/VDOP, and position accuracy estimates.
+- Independent navigation sources, such as IMU, barometer, or optical flow, to cross-check position, altitude, and velocity.
+- Confirmation of timestamp units and whether the dataset was interpolated or resampled, to resolve the 5,000-unit interval.
+- The commanded flight plan, to compare against the observed motion.
