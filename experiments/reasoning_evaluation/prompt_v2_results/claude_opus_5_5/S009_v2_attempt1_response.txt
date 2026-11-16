@@ -1,0 +1,105 @@
+# Telemetry Classification: Sample S009
+
+## 1. Classification
+**Benign**
+
+## 2. Supporting telemetry observations
+
+**Position (lat_x, lon_x)**
+- lon_x is constant at 138.2529156 across all 10 records.
+- lat_x is 36.20482055 for records 1–8 and 36.20482056 for records 9–10. That is a single change in the last reported digit (1e-8).
+- There are no jumps, oscillations or discontinuities in position.
+
+**Altitude (alt_x)**
+- Range is 51.93466 to 51.938145, a total spread of about 0.0035.
+- Records 2–8 rise in nearly identical steps of about 0.00058 each.
+- Records 9–10 decline in steps of about 0.00032.
+- The trend is smooth and small, with no abrupt changes.
+
+**Satellites and fix**
+- satellites_used is constant at 11.0.
+- fix_type is constant at 3.
+- Neither degrades at any point in the window.
+
+**jamming_indicator**
+- Records 1–5 fall slightly and linearly from 21.129 to 21.0, in steps of about −0.0323.
+- Records 6–10 rise linearly from 21.655 to 24.276, in steps of about +0.655.
+- Net change is about +3.15, roughly a 15% increase over the window.
+
+**vel_m_s**
+- Records 1–5 rise slightly, from 0.07735 to 0.078.
+- Records 6–10 fall linearly, from 0.07645 to 0.07024.
+- All values are small and close to each other.
+
+**Timestamps**
+- Intervals are irregular: about 45k, 5k, 50k, 28k, 27k, 45k, 45k, 5k and 50k.
+- Units are not stated.
+
+**Cross-feature relationships**
+- The jamming_indicator rise in records 6–10 coincides with a slight velocity decrease and a small altitude change.
+- It does not coincide with any change in satellites_used, fix_type or position.
+
+## 3. Reasoning
+
+**Evidence for Benign**
+- The navigation solution appears stable across every quality-related field: constant satellite count, constant fix type and essentially unchanged position.
+- Low, slowly varying velocity and millimeter-scale altitude variation are internally consistent with a stationary or near-stationary vehicle. However, units are not given, so any physical interpretation is tentative.
+- Nothing shows the signatures commonly associated with spoofing, such as:
+  - position jumps or steady drift inconsistent with velocity,
+  - altitude discontinuities,
+  - sudden changes in satellite count.
+- Nothing shows the degradation commonly associated with effective jamming, such as falling satellites_used or a downgraded fix_type.
+
+**Evidence for Malicious**
+- The jamming_indicator rises steadily and monotonically in the second half of the window, at a rate about 20 times faster than its earlier decline.
+- Read in isolation, this could be the early onset of interference.
+- However, it is a single feature with a modest change, and the window has no baseline to say whether values in the 21–24 range are normal for this platform.
+- No other feature corroborates an effect on the GNSS solution.
+- Per the guidance, a single changing feature, especially one interpreted from its name alone, is not sufficient to support a malicious classification.
+
+**Why not Insufficient Evidence**
+- The window does contain meaningful, specific information: several independent indicators of navigation integrity all remain stable, and they agree with each other.
+- The missing baseline limits interpretation of the jamming_indicator's absolute level.
+- It does not prevent assessing the coherence of the overall telemetry, which favors Benign.
+
+**Observation about data structure**
+- The very regular, piecewise-linear steps in alt_x, jamming_indicator and vel_m_s suggest the values may have been resampled or interpolated.
+- The jamming steps are close to 1/31 and 19/29, and the trend direction changes at records 5–6.
+- This is a possible explanation, not an established fact. It does not by itself indicate either class.
+
+## 4. Alternative explanations
+
+**Possible benign causes of the rising jamming_indicator**
+- Ordinary changes in the RF environment, such as nearby electronics or onboard emissions.
+- Changes in antenna orientation or the vehicle's own electrical load.
+- Normal fluctuation of the indicator over time.
+
+**Possible explanations for the smooth trends**
+- Data-processing artifacts such as interpolation, resampling or log alignment. This could explain the linear patterns and the slope change between records 5 and 6.
+
+**Possible explanations for the small velocity and altitude variation**
+- Normal estimator noise or slight hovering motion.
+
+**Malicious possibilities that cannot be fully excluded**
+- Low-power interference whose effect has not yet reached satellites_used or fix_type.
+- A sophisticated spoofing scenario designed to keep position consistent. This window offers no positive evidence for it.
+
+## 5. Confidence
+**Medium**
+
+- The stability of position, satellites and fix across all records gives meaningful support for Benign.
+- Confidence is not High because:
+  - the jamming_indicator trend is unexplained,
+  - there is no baseline,
+  - units and feature definitions are not provided,
+  - the window is short.
+
+## 6. Additional evidence needed
+
+- **Baseline jamming_indicator values** for this platform and environment, to judge whether 21–24 is typical. It would also help to know the indicator's scale and its threshold for concern.
+- **Records after this window**, to see whether the jamming_indicator keeps rising and whether satellites_used, fix_type or position eventually degrade.
+- **Signal-quality fields**, such as carrier-to-noise density per satellite, noise level, AGC, spoofing flags, HDOP/VDOP and position accuracy estimates.
+- **Independent navigation sources**, such as IMU or inertial dead-reckoning, barometric altitude, optical flow or visual odometry, to cross-check the GNSS position and velocity.
+- **Feature definitions and units** for timestamps, velocity, altitude and jamming_indicator.
+- **Data-processing documentation**, to confirm whether values were interpolated or resampled.
+- **Mission context**, such as whether the vehicle was intended to be hovering or stationary.

@@ -1,0 +1,87 @@
+# Telemetry Classification: Sample S010
+
+## 1. Classification
+**Insufficient Evidence**
+
+## 2. Supporting telemetry observations
+
+**GNSS status (constant across all 10 records)**
+- `satellites_used` = 11.0 throughout.
+- `fix_type` = 3 throughout.
+- There are no dropouts, fix changes, or satellite-count changes.
+
+**Position**
+- `lat_x` decreases monotonically from 36.20492913 to 36.20492729, a total change of about −1.84×10⁻⁶ in the reported coordinate.
+- Records 1–5 decrease by about 2.4×10⁻⁷ per record.
+- Records 5–10 decrease by about 1.7–1.8×10⁻⁷ per record.
+- The rate changes at record 5.
+- `lon_x` is essentially constant (138.2529112 → 138.2529111). This is a single change in the last displayed digit, possibly a rounding effect.
+
+**Altitude**
+- `alt_x` rises by exactly about 0.000588 per record through record 5 (51.85497 → 51.85732).
+- It then falls by exactly about 0.0000172 per record (51.85732 → 51.85724).
+- This is a piecewise-linear pattern with a breakpoint at the same record as the latitude rate change.
+
+**Jamming indicator**
+- `jamming_indicator` decreases by an exactly constant step of about 0.19355 per record (35.516 → 33.774).
+- There is no breakpoint in this series.
+
+**Velocity**
+- `vel_m_s` increases by an exactly constant step of about 0.0045484 per record (0.4349 → 0.4758).
+- There is no breakpoint in this series.
+
+**Timestamps**
+- Intervals follow a repeating pattern of roughly 45,000, 5,000 and 50,000 units (e.g., 44,981; 4,999; 49,988; 44,988; 4,999; …).
+- Spacing is irregular, varying by about 10× between consecutive gaps.
+
+**Cross-feature relationships**
+- Per-record position and altitude steps are nearly identical whether the timestamp gap is about 5,000 or about 50,000 units.
+- So the displacement per unit time implied by the records varies by roughly an order of magnitude, while the velocity field changes smoothly.
+- After record 5, the latitude step shrinks while `vel_m_s` keeps increasing.
+
+## 3. Reasoning
+
+**Evidence that could favor Benign**
+- GNSS quality fields are completely stable: 11 satellites and fix type 3 throughout.
+- There are no abrupt position jumps, altitude jumps, or velocity discontinuities.
+- The overall motion is small and gradual. Latitude changes in the 7th decimal place, altitude in the 4th–5th decimal place, and velocity stays below 0.5 in its reported units.
+- This is consistent in general character with near-stationary or slow flight, such as hovering with minor drift.
+- The jamming indicator moves gradually downward rather than spiking.
+
+**Evidence that could favor Malicious**
+- Position drifts steadily in one direction while GNSS quality metrics remain perfectly constant. Gradual, smooth position drift with unchanged satellite and fix status is a pattern sometimes discussed in spoofing contexts.
+- Displacement per record does not scale with the timestamp gaps. Taken at face value, this is a kinematic inconsistency.
+- After record 5, the latitude step decreases while `vel_m_s` keeps increasing. The two fields do not obviously track each other.
+- The `jamming_indicator` is non-zero (about 34–35). However, its scale and meaning are not provided, so I cannot judge whether that level is elevated.
+
+**Why neither hypothesis is meaningfully supported**
+- Every numeric field changes by an exactly constant amount per record. Lat and alt follow a two-segment linear pattern; jamming indicator and velocity follow one linear segment.
+- This exact linearity, indexed by record rather than by timestamp, strongly suggests the values are interpolated, resampled, or merged from streams at different rates. The repeating timestamp-gap pattern is consistent with that.
+- If so, the apparent inconsistencies probably reflect how the data were assembled, not how the vehicle or its sensors behaved. That makes them weak evidence of manipulation.
+- The same smoothing also removes the raw sensor behavior (noise, jumps, rate changes) that would normally help separate genuine from manipulated data. It therefore weakens the case for Benign too.
+- The remaining observations (stable satellites and fix, small smooth drift, gradually declining indicator) fit both benign slow flight and a gradual, low-signature manipulation.
+
+**Why this is not a default choice**
+The deciding problem is not the short window or the missing baseline. Within this window, the potentially discriminating features are either fully consistent with both hypotheses or plausibly explained by data processing. The missing information (raw sampling, indicator semantics, units) is exactly what would be needed to tell the hypotheses apart.
+
+## 4. Alternative explanations (non-malicious)
+
+These are possibilities, not established facts.
+
+- **Interpolation or resampling.** Linear fill between sparse true samples could produce the exact constant steps, the shared breakpoint at record 5, and the time-independent displacement per record.
+- **Merged multi-rate logging.** The repeating 45k/5k/50k timestamp pattern may come from combining messages logged at different rates and aligning them.
+- **Normal hover or slow-flight drift.** Small latitude and altitude changes with low velocity are consistent with station-keeping.
+- **Normal variation in the jamming indicator.** A slowly changing value may reflect the ordinary RF environment or receiver behavior. Its absolute level cannot be interpreted without scale information.
+- **Field definition differences.** `vel_m_s` may be a filtered estimate, a different velocity component, or computed from a different source than the position fields. That would explain why it does not track latitude change directly.
+
+## 5. Confidence
+**Medium.** This reflects confidence that the window does not meaningfully distinguish the two hypotheses, not confidence in either one.
+
+## 6. Additional evidence needed
+
+- **Raw data:** the original, un-interpolated telemetry and documentation of any preprocessing (interpolation, resampling, stream merging).
+- **Units and definitions:** timestamp units, `vel_m_s` definition (ground speed, 3D, or a component; source), `alt_x` reference, and the meaning and range of `jamming_indicator`, including typical benign values.
+- **Longer context:** a longer window before and after this segment to see whether the latitude drift continues, accelerates, or reverses, and whether the indicator trend changes.
+- **Additional GNSS fields:** C/N0 or signal strength per satellite, HDOP/VDOP, position accuracy estimates, noise or AGC metrics, and the GNSS velocity components.
+- **Independent cross-checks:** IMU or accelerometer data, barometer, optical flow, and flight-controller mode or commanded setpoints, to test whether reported drift matches actual motion.
+- **Ground truth:** experiment labels or attack-schedule metadata for the session, if available, for validation.
