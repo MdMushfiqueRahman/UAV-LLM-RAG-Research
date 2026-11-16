@@ -1,0 +1,78 @@
+# UAV Telemetry Analysis: Sample S007
+
+## 1. Classification
+**Benign** (low confidence)
+
+## 2. Supporting telemetry observations
+
+**Timing**
+- There are 10 records.
+- Timestamps advance by about 49,989 to 50,016 units per step. Spacing is regular, with no gaps or duplicates.
+
+**Position**
+- `lat_x` moves from 36.20481947 to 36.20481941, then returns to 36.20481942.
+  - Each step changes by about 1×10⁻⁸, near the displayed resolution.
+  - The reversal at record 8 is within that resolution.
+- `lon_x` moves from 138.2529125 to 138.2529128. These are single-digit changes in the last displayed decimal place.
+- `alt_x` rises steadily from 51.9359 to 51.9660, about +0.030 in total.
+  - Records 1–7 increase by about 0.00328 per step.
+  - Records 8–10 increase by about 0.00350 per step.
+- Overall, position is nearly static with smooth, small changes. There are no jumps or discontinuities.
+
+**GNSS quality**
+- `satellites_used` is constant at 11.0 in all records.
+- `fix_type` is constant at 3 in all records.
+
+**Jamming indicator**
+- `jamming_indicator` rises monotonically from 28.565 to 36.783, an increase of about 29% within the window.
+- The increments are exactly constant at about 0.913043 (≈ 21/23) per step.
+
+**Velocity**
+- `vel_m_s` rises monotonically from 0.02452 to 0.03626.
+- The increments are exactly constant at about 0.0013043 (≈ 0.03/23) per step.
+
+## 3. Reasoning
+
+**Evidence for Malicious**
+- The only feature that suggests interference is the steady upward trend in `jamming_indicator`.
+- Velocity rises in parallel. Altitude also rises steadily.
+- A coordinated, monotonic change across several features could, hypothetically, fit the onset of interference or a slow manipulation.
+
+**Evidence for Benign**
+- No downstream effect consistent with jamming appears in the window:
+  - Satellite count holds at 11.
+  - Fix type holds at 3.
+  - Position remains coherent and nearly stationary.
+- Nothing typical of spoofing appears either. There are no position jumps, no implausible velocities, and no inconsistency between the small position changes and the small velocity values.
+- The exactly constant increments in `jamming_indicator` and `vel_m_s` (fractions over a denominator of about 23) look like linear interpolation or resampling between sparser source samples. That would describe how the data were processed, not physical behaviour. This is an inference from the arithmetic pattern and is not established.
+- No scale or threshold is given for `jamming_indicator`. Its rise alone therefore cannot be called abnormal, and an indicator's name is not proof of an attack.
+
+**Why Benign rather than Insufficient Evidence**
+- Every feature that could show the effects of an attack (satellites, fix, position, velocity) is stable and internally consistent.
+- The single contrary signal is a moderate trend of unknown significance.
+- The missing baseline weakens confidence but does not prevent a meaningful lean toward Benign.
+
+**Unresolved point**
+- If `alt_x` were in metres and the timestamps in microseconds, the vertical rate would be about 0.066 per second. That would exceed `vel_m_s`.
+- The units are not provided, and `vel_m_s` may represent only horizontal speed. This point cannot be evaluated.
+
+## 4. Alternative (non-malicious) explanations for the jamming trend
+- Ordinary changes in the RF environment, such as nearby electronics, other emitters, or onboard noise from motor or power changes.
+- Normal fluctuation of the receiver's internal metric.
+- Interpolation or upsampling during dataset preparation, which would produce the observed perfectly linear trends.
+- Small altitude and velocity changes consistent with hovering, slight drift, or estimator settling.
+
+## 5. Confidence
+**Low.**
+- The window is short.
+- The meaning and scale of `jamming_indicator` are unknown.
+- The jamming trend could be the early stage of an interference event that develops beyond this window.
+
+## 6. Additional evidence needed
+- **Jamming indicator context:** the indicator's range and alert thresholds, plus a baseline from the same flight or receiver.
+- **Longer time context:** telemetry before and after this window, to see whether the trend continues, plateaus, or leads to loss of satellites or fix.
+- **Signal-level data:** C/N0 per satellite, noise or AGC levels, HDOP/VDOP, and position accuracy estimates.
+- **Independent cross-checks:** IMU, barometer, or optical-flow data to validate position, altitude, and velocity.
+- **Data provenance:** confirmation of whether the data were interpolated or resampled.
+- **Definitions:** the units of the timestamps and `alt_x`, and the definition of `vel_m_s`.
+- **Labels:** ground-truth or experiment labels for this time segment.
