@@ -1,0 +1,26 @@
+1. Classification:
+   Malicious
+
+2. Supporting telemetry observations:
+   - A highly anomalous and sustained pattern between `jamming_indicator` and `vel_m_s`.
+   - The `jamming_indicator` shows a perfectly linear, stepwise decrease from 20.8 to 18.28 over ten records.
+   - Simultaneously, the `vel_m_s` shows a perfectly linear, stepwise decrease from 0.0746 to 0.02636 over the same ten records.
+   - These two features are perfectly anti-correlated (as one decreases linearly, the other decreases linearly) across the entire window.
+   - Other navigation-related features (`lat_x`, `lon_x`, `alt_x`, `satellites_used`, `fix_type`) remain stable and within normal operational bounds.
+
+3. Reasoning:
+   The perfectly synchronized, linear, and anti-correlated trends between the `jamming_indicator` and `vel_m_s` are highly improbable in normal flight dynamics. In benign operation, a jamming indicator would likely fluctuate with environmental RF noise and multipath, not follow a perfect arithmetic sequence. Ground speed (`vel_m_s`) in a stable flight should also show minor variations due to control inputs and wind, not a perfectly linear descent. The mathematical precision and lockstep relationship suggest a systemic, non-physical coupling between these two disparate sensor readings. This pattern is a hallmark of synthetic data generation or manipulation, which is a strong indicator of malicious activity such as spoofing or data injection, where an attacker's model generates predictable, correlated values.
+
+4. Alternative explanations:
+   - An extremely unlikely but benign sensor fault where two independent sensors (radio receiver and IMU/ground speed sensor) develop a fault with identical, linear error characteristics.
+   - The UAV executing a pre-programmed, perfectly linear deceleration profile while coincidentally flying through a jamming field that is decreasing in intensity with the same perfect linearity.
+   - A data-logging or telemetry encoding bug that artificially creates this correlation between the two fields.
+   These explanations are far less plausible than the data being manipulated.
+
+5. Confidence:
+   Medium. The pattern is strongly indicative of manipulation, but without a known baseline of "normal" correlated behavior for this specific UAV platform, we cannot completely rule out a bizarre but benign system artifact with absolute certainty.
+
+6. Additional evidence needed:
+   - A baseline of benign telemetry from the same UAV model to confirm that `jamming_indicator` and `vel_m_s` are not normally correlated.
+   - Raw RF signal data or IMU data to cross-validate the `jamming_indicator` and `vel_m_s` readings.
+   - Telemetry from other UAVs in the same airspace to see if they report similar anomalous patterns.
