@@ -1,0 +1,24 @@
+**1. Classification:**  
+Malicious  
+
+**2. Supporting telemetry observations:**  
+- `jamming_indicator` increases monotonically from 21.0 to 24.28 across the window, with one large jump from 21.0 to 21.66 between timestamps 374727138 and 374754319.  
+- `alt_x` initially rises steadily (51.93 to 51.94), then reverses direction and declines after timestamp 374844299 while `jamming_indicator` continues rising.  
+- `vel_m_s` declines monotonically from 0.078 to 0.07024 while `lat_x` and `lon_x` remain almost static.  
+- `satellites_used` and `fix_type` are constant (11, 3).  
+
+**3. Reasoning:**  
+The combination of a rising `jamming_indicator` (commonly linked to GPS signal interference), a decreasing velocity while altitude changes direction, and near‑static horizontal coordinates suggests potential spoofing or jamming. In benign flight, velocity and altitude changes normally correlate with trajectory updates; here, horizontal position is frozen while altitude varies, which is unusual. The `jamming_indicator` trend alone is not conclusive, but its steady increase paired with anomalous kinematic behavior (altitude reversal without lateral movement) points to possible malicious interference overriding normal navigation.  
+
+**4. Alternative explanations:**  
+- Benign: UAV could be in a precise hover or loiter pattern with minor altitude adjustments (e.g., for imaging).  
+- Sensor errors or telemetry reporting artifacts might cause `jamming_indicator` inflation without real interference.  
+- Constant `lat_x`/`lon_x` could result from integer rounding in the data feed, not actual lack of movement.  
+
+**5. Confidence:**  
+Medium  
+
+**6. Additional evidence needed:**  
+- Longer baseline of `jamming_indicator` under normal conditions.  
+- Corroborating data (e.g., IMU readings, GPS SNR, control‑link status) to confirm whether the velocity/altitude changes are commanded or anomalous.  
+- Context: mission type, flight environment, and whether static coordinates are expected.
